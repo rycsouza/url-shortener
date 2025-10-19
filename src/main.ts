@@ -26,7 +26,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT || 3000);
-  console.log(`🚀 Server running on: ${process.env.BASE_URL}`);
-  console.log(`📘 Swagger docs: ${process.env.BASE_URL}/docs`);
+  console.log(`Servidor: http://localhost:${process.env.PORT}`);
+  console.log(`Swagger:  http://localhost:${process.env.PORT}/docs`);
 }
 bootstrap();
