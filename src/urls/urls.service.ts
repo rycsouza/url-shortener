@@ -1,6 +1,10 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomBytes } from 'crypto';
+import { createHash } from 'crypto';
 import { IsNull, Repository } from 'typeorm';
 
 import { Url } from './url.entity';
@@ -12,26 +16,23 @@ export class UrlsService {
     private readonly urlsRepo: Repository<Url>,
   ) {}
 
-  private generateShortCode(): string {
-    return randomBytes(3).toString('base64url');
+  private generateShortCode(id: string): string {
+    return createHash('sha256').update(id).digest('base64url').substring(0, 6);
   }
 
   async create(originalUrl: string, userId?: string) {
-    let shortCode = this.generateShortCode();
+    const url = await this.urlsRepo.save(
+      this.urlsRepo.create({
+        originalUrl,
+        user: userId ? { id: userId } : undefined,
+      }),
+    );
 
-    while (
-      await this.urlsRepo.findOne({ where: { shortCode, deletedAt: IsNull() } })
-    )
-      shortCode = this.generateShortCode();
+    url.shortCode = this.generateShortCode(url.id);
 
-    const url = this.urlsRepo.create({
-      originalUrl,
-      shortCode,
-      user: userId ? { id: userId } : undefined,
-    });
-
+    await this.urlsRepo.save(url);
     return {
-      ...(await this.urlsRepo.save(url)),
+      ...url,
       shortUrl: `${process.env.BASE_URL}/my/${url.shortCode}`,
     };
   }

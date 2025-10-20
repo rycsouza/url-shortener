@@ -19,8 +19,8 @@ export class Url {
   @Column()
   originalUrl: string;
 
-  @Column({ unique: true })
-  shortCode: string;
+  @Column({ unique: true, nullable: true })
+  shortCode?: string;
 
   @Column({ default: 0 })
   clicks: number;
