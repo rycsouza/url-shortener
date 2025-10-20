@@ -8,7 +8,7 @@ import type { Response } from 'express';
 import { CreateUrlDto } from './dto/create-url.dto';
 import { UpdateUrlDto } from './dto/update-url.dto';
 import { UrlsService } from './urls.service';
-import { JwtOptionalAuthGuard } from 'src/auth/jwt-optional.guard';
+import { JwtOptionalAuthGuard } from '../auth/jwt-optional.guard';
 import { UrlResponseDto } from './dto/response/url-response.dto';
 import { DeletedUrlResponseDto } from './dto/response/deleted-url-response.dto';
 
@@ -35,8 +35,7 @@ export class UrlsController {
   })
   async create(@Body() dto: CreateUrlDto, @Req() req: any) {
     const userId = req.user?.userId;
-    const url = await this.urlsService.create(dto.originalUrl, userId);
-    return url;
+    return await this.urlsService.create(dto.originalUrl, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -88,7 +87,10 @@ export class UrlsController {
     type: DeletedUrlResponseDto,
     description: 'URL deletada logicamente com sucesso',
   })
-  @ApiResponse({ status: 403, description: 'Usuário não autorizado a deletar esta URL' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não autorizado a deletar esta URL',
+  })
   @ApiResponse({ status: 404, description: 'URL não encontrada' })
   async remove(@Param('id') id: string, @Req() req: any) {
     return await this.urlsService.softDelete(id, req.user.userId);
