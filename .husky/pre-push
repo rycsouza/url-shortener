@@ -1,2 +1,2 @@
-echo "🚀 Rodando testes de cobertura antes do push..."
+echo "Rodando testes de cobertura antes do push..."
 npm run test:cov

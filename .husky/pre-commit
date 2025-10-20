@@ -1,2 +1,5 @@
-echo "🔍 Executando testes antes do commit..."
-npm run test
+echo "Rodando ESLint e Prettier..."
+npx lint-staged
+
+echo "Executando testes unitários..."
+npm test
