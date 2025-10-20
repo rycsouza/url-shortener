@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AuthModule } from './auth/auth.module';
-import databaseConfig from './config/database.config';
-import { UsersModule } from './users/users.module';
-import { UrlsModule } from './urls/urls.module';
-import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { APP_FILTER } from '@nestjs/core';
+import { SentryModule } from '@sentry/nestjs/setup';
+import { AuthModule } from './auth/auth.module';
+import { SentryAllExceptionsFilter } from './commom/filters/sentry-all-exceptions.filter';
+import databaseConfig from './config/database.config';
+import { UrlsModule } from './urls/urls.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { APP_FILTER } from '@nestjs/core';
   providers: [
     {
       provide: APP_FILTER,
-      useClass: SentryGlobalFilter,
+      useClass: SentryAllExceptionsFilter,
     },
   ],
 })
