@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { IsNull, Repository } from 'typeorm';
@@ -83,7 +79,7 @@ export class UrlsService {
       throw new ForbiddenException('You cannot edit this URL');
 
     url.originalUrl = newUrl;
-    return this.urlsRepo.save(url);
+    return await this.urlsRepo.save(url);
   }
 
   async softDelete(id: string, userId: string) {
