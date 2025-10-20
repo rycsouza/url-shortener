@@ -1,98 +1,188 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# URL Shortener API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API desenvolvida com **NestJS**, **TypeScript** e **PostgreSQL** para encurtar URLs, acompanhar cliques e gerenciar links autenticados.  
+Este projeto foi criado com foco em **boas práticas**, **observabilidade** e **qualidade de código**, servindo como base sólida para aplicações de back-end modernas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Visão Geral
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Autenticação via **JWT**
+- Encurtamento de URLs público e autenticado
+- Contabilização de cliques em cada link
+- Exclusão lógica (soft delete)
+- Observabilidade com **Sentry**
+- Testes unitários e integração com **GitHub Actions**
+- Husky + ESLint + Prettier (garantindo commits limpos)
+- Execução local via **Docker Compose**
 
-## Project setup
+---
 
-```bash
-$ npm install
+## Tecnologias Utilizadas
+
+- [NestJS](https://nestjs.com/)
+- [TypeORM](https://typeorm.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Sentry](https://sentry.io/)
+- [Docker](https://www.docker.com/)
+- [Jest](https://jestjs.io/)
+- [Husky](https://typicode.github.io/husky)
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io/)
+
+---
+
+## Estrutura do Projeto
+
+```
+src/
+ ├── auth/              # Módulo de autenticação (login, registro)
+ ├── users/             # Módulo de usuários
+ ├── urls/              # Módulo principal (encurtamento, contagem, redirecionamento)
+ ├── common/            # Filtros, decorators, guards e interceptors globais
+ ├── config/            # Configurações (DB, Sentry, etc.)
+ └── main.ts            # Ponto de entrada da aplicação
 ```
 
-## Compile and run the project
+---
+
+## Como Rodar o Projeto Localmente
+
+### Pré-requisitos
+
+- Node.js 22+
+- Docker e Docker Compose
+- NPM
+
+---
+
+### 1. Clone o repositório
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/rycsouza/url-shortener.git
+cd url-shortener
 ```
 
-## Run tests
+---
+
+### 2. Crie o arquivo `.env`
 
 ```bash
-# unit tests
-$ npm run test
+# Servidor
+PORT=3000
+BASE_URL=http://localhost:3000
+NODE_ENV=development
 
-# e2e tests
-$ npm run test:e2e
+# Banco de Dados
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=database
+POSTGRES_PORT=5432
+DATABASE_URL=postgres://postgres:postgres@db:5432/database
 
-# test coverage
-$ npm run test:cov
+# JWT
+JWT_SECRET=mysecret
+JWT_EXPIRES_IN=1d
+
+# Observabilidade
+SENTRY_DSN=https://SEU_TOKEN_DO_SENTRY
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. Suba o ambiente com Docker
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up --build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Isso irá subir:
 
-## Resources
+- API NestJS em `http://localhost:3000`
+- Banco PostgreSQL
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 4. Acesse a documentação Swagger
 
-## Support
+Após subir o ambiente, acesse:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+http://localhost:3000/docs
+```
 
-## Stay in touch
+Você poderá testar todas as rotas diretamente pela interface Swagger UI.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+### 5. Rodar os testes
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm run test
+```
+
+Para ver a cobertura:
+
+```bash
+npm run test:cov
+```
+
+---
+
+## Funcionalidades Principais
+
+| Método | Rota             | Descrição                          | Autenticação |
+| ------ | ---------------- | ---------------------------------- | ------------ |
+| POST   | `/auth/register` | Registrar novo usuário             | ❌           |
+| POST   | `/auth/login`    | Obter token JWT                    | ❌           |
+| POST   | `/urls`          | Encurtar uma URL                   | ✅ Opcional  |
+| GET    | `/:shortCode`    | Redirecionar e contabilizar clique | ❌           |
+| GET    | `/urls`          | Listar URLs do usuário autenticado | ✅           |
+| PATCH  | `/urls/:id`      | Atualizar URL                      | ✅           |
+| DELETE | `/urls/:id`      | Soft delete da URL                 | ✅           |
+
+---
+
+## Git Hooks e CI/CD
+
+Este projeto utiliza:
+
+### **Husky**
+
+- `pre-commit`: roda ESLint, Prettier e testes antes do commit.
+- `pre-push`: roda testes de cobertura antes do push.
+
+### **GitHub Actions**
+
+O pipeline executa automaticamente:
+
+- Instalação de dependências
+- Testes unitários
+- Cobertura de código
+
+Workflow: `.github/workflows/tests.yml`
+
+---
+
+## Observabilidade (Sentry)
+
+A integração com o [Sentry](https://sentry.io/) captura automaticamente:
+
+- Erros 500, 404 e qualquer exceção global
+- Stack trace completo com contexto da requisição
+- Performance e tempo de execução de rotas
+
+---
+
+## Próximos Passos e Possíveis Melhorias
+
+- Adicionar métricas Prometheus / Grafana
+- Implementar fila de jobs com RabbitMQ (contagem assíncrona)
+- Deploy completo com Terraform + Kubernetes
+
+---
+
+## Licença
+
+MIT © 2025 — Desenvolvido por **Rychard Souza**  
+Projeto criado para portfólio, estudo e demonstração de arquitetura back-end profissional.
