@@ -1,4 +1,2 @@
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🚀 Rodando testes de cobertura antes do push..."
 npm run test:cov
