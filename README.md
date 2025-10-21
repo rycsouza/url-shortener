@@ -84,6 +84,10 @@ DATABASE_URL=postgres://postgres:postgres@db:5432/database
 JWT_SECRET=mysecret
 JWT_EXPIRES_IN=1d
 
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
 # Observabilidade
 SENTRY_DSN=https://SEU_TOKEN_DO_SENTRY
 ```
@@ -184,5 +188,5 @@ A integração com o [Sentry](https://sentry.io/) captura automaticamente:
 
 ## Licença
 
-MIT © 2025 — Desenvolvido por **Rychard Souza**  
+2025 — Desenvolvido por **Rychard Souza**  
 Projeto criado para portfólio, estudo e demonstração de arquitetura back-end profissional.
