@@ -1,11 +1,11 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
 import { IsNull, Repository } from 'typeorm';
 
-import { UrlResponseDto } from './dto/response/url-response.dto';
 import { Url } from './url.entity';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+
 import type { Cache } from 'cache-manager';
 
 @Injectable()
@@ -44,8 +44,6 @@ export class UrlsService {
   async findByShortCode(shortCode: string) {
     const cached = await this.cacheManager.get<Url>(shortCode);
     if (cached) return cached;
-
-    console.log({ cached, teste: true });
 
     const url = await this.urlsRepo.findOne({
       where: { shortCode, deletedAt: IsNull() },
