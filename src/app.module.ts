@@ -9,10 +9,18 @@ import { SentryAllExceptionsFilter } from './commom/filters/sentry-all-exception
 import databaseConfig from './config/database.config';
 import { UrlsModule } from './urls/urls.module';
 import { UsersModule } from './users/users.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import redisConfig from './config/redis.config';
 
 @Module({
   imports: [
     SentryModule.forRoot(),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => ({
+        store: await redisConfig(),
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],

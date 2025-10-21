@@ -1,16 +1,19 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
 import { IsNull, Repository } from 'typeorm';
 
 import { UrlResponseDto } from './dto/response/url-response.dto';
 import { Url } from './url.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class UrlsService {
   constructor(
     @InjectRepository(Url)
     private readonly urlsRepo: Repository<Url>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private generateShortCode(id: string): string {
@@ -26,21 +29,32 @@ export class UrlsService {
     );
 
     url.shortCode = this.generateShortCode(url.id);
-
     await this.urlsRepo.save(url);
-    return {
+
+    const data = {
       ...url,
       shortUrl: `${process.env.BASE_URL}/my/${url.shortCode}`,
     };
+
+    await this.cacheManager.set(url.shortCode, data);
+
+    return data;
   }
 
   async findByShortCode(shortCode: string) {
+    const cached = await this.cacheManager.get<Url>(shortCode);
+    if (cached) return cached;
+
+    console.log({ cached, teste: true });
+
     const url = await this.urlsRepo.findOne({
       where: { shortCode, deletedAt: IsNull() },
       relations: ['user'],
     });
-
     if (!url) throw new NotFoundException('URL not found');
+
+    await this.cacheManager.set(shortCode, url);
+
     return url;
   }
 
@@ -73,11 +87,14 @@ export class UrlsService {
     });
 
     if (!url) throw new NotFoundException('URL not found');
-    if (url.user?.id !== userId)
-      throw new ForbiddenException('You cannot edit this URL');
+    if (url.user?.id !== userId) throw new ForbiddenException('You cannot edit this URL');
 
     url.originalUrl = newUrl;
-    return await this.urlsRepo.save(url);
+    await this.urlsRepo.save(url);
+
+    await this.cacheManager.set(url.shortCode!, url);
+
+    return url;
   }
 
   async softDelete(id: string, userId: string) {
@@ -87,10 +104,13 @@ export class UrlsService {
     });
 
     if (!url) throw new NotFoundException('URL not found');
-    if (url.user?.id !== userId)
-      throw new ForbiddenException('You cannot delete this URL');
+    if (url.user?.id !== userId) throw new ForbiddenException('You cannot delete this URL');
 
     url.deletedAt = new Date();
-    return await this.urlsRepo.save(url);
+    await this.urlsRepo.save(url);
+
+    await this.cacheManager.del(url.shortCode!);
+
+    return url;
   }
 }
